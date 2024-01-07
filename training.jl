@@ -3,7 +3,6 @@ using NIfTI
 using CUDA
 using Flux
 using Statistics
-using Plots
 using JLD2
 
 #import data
@@ -16,12 +15,12 @@ sim64, _ = BDTools.Denoiser.standardize(reshape(gt.data[:,:,2],
 ori = Float32.(ori64)
 sim = Float32.(sim64)
 
-
+N = 100
 dev = Flux.cpu
 
 # repeat training
 cor_list10 = []
-for i in 1:20
+for i in 1:N
     model = DenoiseNet(BDTools.TrainParameters(; epochs = 10); dev = dev)
 
     losses, test_original, test_simulation = BDTools.train!(model, sim, ori)
@@ -52,7 +51,7 @@ cor10mean = mean(cor10,dims=2)
 cor10std = std(cor10,dims=2)
 
 cor_list15 = []
-for i in 1:20
+for i in 1:N
     model = DenoiseNet(BDTools.TrainParameters(; epochs = 15); dev = dev)
 
     losses, test_original, test_simulation = BDTools.train!(model, sim, ori)
@@ -83,7 +82,7 @@ cor15mean = mean(cor15,dims=2)
 cor15std = std(cor15,dims=2)
 
 cor_list20 = []
-for i in 1:20
+for i in 1:N
     model = DenoiseNet(BDTools.TrainParameters(; epochs = 20); dev = dev)
 
     losses, test_original, test_simulation = BDTools.train!(model, sim, ori)
@@ -114,7 +113,7 @@ cor20mean = mean(cor20,dims=2)
 cor20std = std(cor20,dims=2)
 
 cor_list50 = []
-for i in 1:20
+for i in 1:N
     model = DenoiseNet(BDTools.TrainParameters(; epochs = 50); dev = dev)
 
     losses, test_original, test_simulation = BDTools.train!(model, sim, ori)
@@ -145,7 +144,7 @@ cor50mean = mean(cor50,dims=2)
 cor50std = std(cor50,dims=2)
 
 cor_list100 = []
-for i in 1:20
+for i in 1:N
     model = DenoiseNet(BDTools.TrainParameters(; epochs = 100); dev = dev)
 
     losses, test_original, test_simulation = BDTools.train!(model, sim, ori)
@@ -179,4 +178,4 @@ cor_epochs = [10,15,20,50,100]
 cormatrix_mean = reduce(hcat,[cor10mean,cor15mean,cor20mean,cor50mean,cor100mean])
 cormatrix_std = reduce(hcat,[cor10std,cor15std,cor20std,cor50std,cor100std])
 
-jldsave("cor.jld2"; cor_epochs, cormatrix_mean, cormatrix_std)
+jldsave("cor2.jld2"; cor_epochs, cormatrix_mean, cormatrix_std)
